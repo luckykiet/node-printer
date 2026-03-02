@@ -3,6 +3,7 @@
 .claude/
 build/
 prebuilds/
+*.node
 node_modules/
 *.log
 *.swp
