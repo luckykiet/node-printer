@@ -1,5 +1,11 @@
 .gitignore
+.github/
+.claude/
+build/
+prebuilds/
+node_modules/
+*.log
+*.swp
 *~
 .settings
 .c9*
-prebuilds/

@@ -1,61 +1,85 @@
-Node Printer Prebuild
-============
-Native bind printers on POSIX and Windows OS from Node.js, electron and node-webkit.
+# @luckykiet/node-printer
 
-[![npm version](https://badge.fury.io/js/@thiagoelg%2Fnode-printer.svg)](https://www.npmjs.com/package/@thiagoelg/node-printer) [![Prebuild Binaries and Publish](https://github.com/thiagoelg/node-printer/actions/workflows/prebuild-main.yml/badge.svg)](https://github.com/thiagoelg/node-printer/actions/workflows/prebuild-main.yml)
+Native printer bindings for Node.js on POSIX and Windows. Fork of [@thiagoelg/node-printer](https://github.com/thiagoelg/node-printer) with **Node 24+ support**.
 
-> It just works with Node 12 because of @thiagoelg in his [PR](https://github.com/tojocky/node-printer/pull/261)
+[![npm version](https://badge.fury.io/js/@luckykiet%2Fnode-printer.svg)](https://www.npmjs.com/package/@luckykiet/node-printer)
 
-> Prebuild and CI integration courtesy of @ekoeryanto in his [FORK](https://github.com/ekoeryanto/node-printer)
+## What's different from the original?
 
-If you have a problem, ask question to [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tojocky/node-printer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or find/create a new [Github issue](https://github.com/thiagoelg/node-printer/issues)
+- **Node 24/25 support** — C++20 build, updated V8 compatibility
+- Updated native dependencies (`nan` 2.25+, `node-abi` 4.26+)
+- macOS arm64 (Apple Silicon) prebuild support
+- Modernized GitHub Actions (v4, Node 24)
+- Minimum Node version: **20.0.0**
 
-___
-### **Below is the original README**
-___
-### Reason:
+## Install
 
-I was involved in a project where I need to print from Node.JS. This is the reason why I created this project and I want to share my code with others.
-
-
-### Features:
-
-* no dependecies;
-* native method wrappers from Windows  and POSIX (which uses [CUPS 1.4/MAC OS X 10.6](http://cups.org/)) APIs;
-* compatible with node v0.8.x, 0.9.x and v0.11.x (with 0.11.9 and 0.11.13);
-* compatible with node-webkit v0.8.x and 0.9.2;
-* `getPrinters()` to enumerate all installed printers with current jobs and statuses;
-* `getPrinter(printerName)` to get a specific/default printer info with current jobs and statuses;
-* `getPrinterDriverOptions(printerName)` ([POSIX](http://en.wikipedia.org/wiki/POSIX) only) to get a specific/default printer driver options such as supported paper size and other info
-* `getSelectedPaperSize(printerName)` ([POSIX](http://en.wikipedia.org/wiki/POSIX) only) to get a specific/default printer default paper size from its driver options
-* `getDefaultPrinterName()` return the default printer name;
-* `printDirect(options)` to send a job to a specific/default printer, now supports [CUPS options](http://www.cups.org/documentation.php/options.html) passed in the form of a JS object (see `cancelJob.js` example). To print a PDF from windows it is possible by using [node-pdfium module](https://github.com/tojocky/node-pdfium) to convert a PDF format into EMF and after to send to printer as EMF;
-* `printFile(options)`  ([POSIX](http://en.wikipedia.org/wiki/POSIX) only) to print a file;
-* `getSupportedPrintFormats()` to get all possible print formats for printDirect method which depends on OS. `RAW` and `TEXT` are supported from all OS-es;
-* `getJob(printerName, jobId)` to get a specific job info including job status;
-* `setJob(printerName, jobId, command)` to send a command to a job (e.g. `'CANCEL'` to cancel the job);
-* `getSupportedJobCommands()` to get supported job commands for setJob() depends on OS. `'CANCEL'` command is supported from all OS-es.
-
-
-### How to install:
-```
-npm install @thiagoelg/node-printer
+```bash
+npm install @luckykiet/node-printer
 ```
 
-### How to use:
+### Build prerequisites
 
-See [examples](https://github.com/thiagoelg/node-printer/tree/main/examples)
+The native addon compiles from source if no prebuild is available.
 
-### Author(s):
+**macOS:** Xcode Command Line Tools (ships with CUPS)
+```bash
+xcode-select --install
+```
 
-* Ion Lupascu, ionlupascu@gmail.com
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt-get install libcups2-dev
+```
 
-### Contibutors:
+**Windows:** Visual Studio Build Tools with C++ workload
 
-* Thiago Lugli, @thiagoelg
-* Eko Eryanto, @ekoeryanto
+## API
 
-Feel free to download, test and propose new futures
+```js
+const printer = require('@luckykiet/node-printer');
+```
 
-### License:
- [The MIT License (MIT)](http://opensource.org/licenses/MIT)
+| Method | Description |
+|--------|-------------|
+| `getPrinters()` | List all installed printers with jobs and statuses |
+| `getPrinter(name)` | Get specific printer info |
+| `getDefaultPrinterName()` | Get default printer name |
+| `getPrinterDriverOptions(name)` | Get driver options (POSIX only) |
+| `getSelectedPaperSize(name)` | Get default paper size (POSIX only) |
+| `printDirect(options)` | Send raw data to printer |
+| `printFile(options)` | Print a file (POSIX only) |
+| `getSupportedPrintFormats()` | List supported formats (RAW, TEXT, PDF, etc.) |
+| `getJob(printerName, jobId)` | Get job info |
+| `setJob(printerName, jobId, command)` | Send command to job (e.g. CANCEL) |
+| `getSupportedJobCommands()` | List supported job commands |
+
+## Examples
+
+```js
+const printer = require('@luckykiet/node-printer');
+
+// List printers
+console.log(printer.getPrinters());
+
+// Print raw text
+printer.printDirect({
+  data: 'Hello from Node.js!',
+  printer: printer.getDefaultPrinterName(),
+  type: 'TEXT',
+  success: (jobId) => console.log('Job ID:', jobId),
+  error: (err) => console.error(err),
+});
+```
+
+See the [examples](./examples) directory for more usage patterns.
+
+## Credits
+
+- **Ion Lupascu** — original author ([tojocky/node-printer](https://github.com/tojocky/node-printer))
+- **Thiago Lugli** ([@thiagoelg](https://github.com/thiagoelg)) — Node 12+ support & prebuild CI
+- **Eko Eryanto** ([@ekoeryanto](https://github.com/ekoeryanto)) — prebuild integration
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
