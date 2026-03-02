@@ -18,14 +18,13 @@
     {
       'target_name': 'node_printer',
       'sources': [
-        # is like "ls -1 src/*.cc", but gyp does not support direct patterns on
-        # sources
-        '<!@(["python", "tools/getSourceFiles.py", "src", "cc"])'
+        '<!@(["python3", "tools/getSourceFiles.py", "src", "cc"])'
       ],
       'include_dirs' : [
         "<!(node -e \"require('nan')\")"
       ],
       'cflags_cc+': [
+        "-std=c++20",
         "-Wno-deprecated-declarations"
       ],
       'conditions': [
@@ -44,11 +43,9 @@
           ],
           'ldflags':[
             '<!(cups-config --libs)'
-            #'-lcups -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lz -lpthread -lm -lcrypt -lz'
           ],
           'libraries':[
             '<!(cups-config --libs)'
-            #'-lcups -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lz -lpthread -lm -lcrypt -lz'
           ],
           'link_settings': {
             'libraries': [
@@ -61,9 +58,17 @@
             "-stdlib=libc++"
           ],
           'xcode_settings': {
-            "OTHER_CPLUSPLUSFLAGS":["-std=c++17", "-stdlib=libc++"],
+            "OTHER_CPLUSPLUSFLAGS":["-std=c++20", "-stdlib=libc++"],
             "OTHER_LDFLAGS": ["-stdlib=libc++"],
-            "MACOSX_DEPLOYMENT_TARGET": "10.7",
+            "MACOSX_DEPLOYMENT_TARGET": "10.15",
+            "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
+          },
+        }],
+        ['OS=="win"', {
+          'msvs_settings': {
+            'VCCLCompilerTool': {
+              'AdditionalOptions': ['/std:c++20'],
+            },
           },
         }],
       ]
