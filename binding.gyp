@@ -18,7 +18,7 @@
     {
       'target_name': 'node_printer',
       'sources': [
-        '<!@(["python3", "tools/getSourceFiles.py", "src", "cc"])'
+        '<!@(["node", "tools/get-source-files.js", "src", "cc"])'
       ],
       'include_dirs' : [
         "<!(node -e \"require('nan')\")"

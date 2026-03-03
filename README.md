@@ -7,6 +7,8 @@ Native printer bindings for Node.js on POSIX and Windows. Fork of [@thiagoelg/no
 ## What's different from the original?
 
 - **Node 24/25 support** — C++20 build, updated V8 compatibility
+- **VS2026 compatibility** — fixed C++ two-phase name lookup for MSVC 18+
+- **No Python dependency** — build uses Node.js instead of Python for source file discovery
 - Updated native dependencies (`nan` 2.25+, `node-abi` 4.26+)
 - macOS arm64 (Apple Silicon) prebuild support
 - Modernized GitHub Actions (v4, Node 24)
